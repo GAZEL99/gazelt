@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabungan Sekolah - Aether Style</title>
+  <style>
+    :root {
+      --primary: #7f5af0;
+      --primary-light: #9376f2;
+      --secondary: #2cb67d;
+      --secondary-light: #38c78b;
+      --dark: #16161a;
+      --darker: #0a0a0a;
+      --text: #fffffe;
+      --gray: #94a1b2;
+      --border: #242629;
+      --danger: #ef4444;
+      --danger-light: #f87171;
+      --glow: 0 0 15px rgba(127, 90, 240, 0.5);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: var(--darker);
+      color: var(--text);
+      background-image: linear-gradient(to bottom, #1a1a2e 0%, var(--darker) 100%);
+      min-height: 100vh;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    
+    h1 {
+      color: var(--primary);
+      font-size: 2.5rem;
+      margin: 0 0 1.5rem;
+      font-weight: 700;
+      text-shadow: var(--glow);
+      letter-spacing: 0.5px;
+      position: relative;
+      display: inline-block;
+    }
+    
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 3px;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      padding: 14px 30px;
+      border-radius: 30px;
+      display: inline-block;
+      margin-bottom: 30px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      box-shadow: var(--glow);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .card {
+      background: rgba(22, 22, 26, 0.8);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 0 auto 30px;
+      max-width: 550px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+    
+    .target-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      font-size: 1.1rem;
+    }
+    
+    .target-label {
+      color: var(--gray);
+      font-weight: 500;
+    }
+    
+    .target-value {
+      color: var(--text);
+      font-weight: 600;
+    }
+    
+    .amount {
+      color: var(--secondary);
+      font-weight: 700;
+    }
+    
+    .progress-container {
+      margin: 25px 0;
+    }
+    
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+    
+    .progress-percent {
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.2rem;
+      text-shadow: var(--glow);
+    }
+    
+    .progress-bar {
+      background: var(--border);
+      height: 14px;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      width: 0%;
+      transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+      );
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .days-container {
+      max-width: 550px;
+      margin: 0 auto;
+    }
+    
+    .days-list {
+      background: rgba(22, 22, 26, 0.8);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .day-item {
+      background: rgba(30, 30, 36, 0.7);
+      padding: 18px 20px;
+      margin: 12px 0;
+      border-radius: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .day-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--primary);
+      transition: all 0.3s ease;
+    }
+    
+    .day-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      border-color: var(--primary);
+    }
+    
+    .day-item:hover::before {
+      width: 5px;
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+    }
+    
+    .day-item.checked {
+      background: rgba(44, 182, 125, 0.2);
+      border-color: var(--secondary);
+    }
+    
+    .day-item.checked::before {
+      background: var(--secondary);
+    }
+    
+    .day-info {
+      text-align: left;
+      flex: 1;
+      padding-right: 15px;
+    }
+    
+    .day-number {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .day-number::before {
+      content: '•';
+      margin-right: 8px;
+      color: var(--primary);
+      font-size: 1.5rem;
+      line-height: 0;
+    }
+    
+    .day-date {
+      font-size: 0.9rem;
+      color: var(--gray);
+      opacity: 0.9;
+    }
+    
+    .day-amount {
+      color: var(--secondary);
+      font-weight: 700;
+      margin: 0 15px;
+      white-space: nowrap;
+    }
+    
+    .checkbox-container {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    
+    .checkbox-container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 24px;
+      height: 24px;
+      background: var(--dark);
+      border: 2px solid var(--primary);
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .checkbox-container:hover .checkmark {
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(127, 90, 240, 0.5);
+    }
+    
+    .checkbox-container input:checked ~ .checkmark {
+      background: var(--secondary);
+      border-color: var(--secondary);
+    }
+    
+    .checkmark::after {
+      content: "";
+      display: none;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      margin-top: -2px;
+    }
+    
+    .checkbox-container input:checked ~ .checkmark::after {
+      display: block;
+    }
+    
+    .extra-btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .extra-input {
+      flex: 1;
+      background: rgba(36, 38, 41, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 15px;
+      color: var(--text);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .extra-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(127, 90, 240, 0.3);
+    }
+    
+    .btn-tambah {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--glow);
+    }
+    
+    .btn-kurangi {
+      background: linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+    }
+    
+    .btn-reset {
+      background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-tambah:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(127, 90, 240, 0.6);
+    }
+    
+    .btn-kurangi:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(239, 68, 68, 0.6);
+    }
+    
+    .btn-reset:hover {
+      transform: translateY(-2px);
+    }
+    
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 15px;
+      }
+      
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .header {
+        padding: 12px 20px;
+        font-size: 1rem;
+      }
+      
+      .card, .days-list {
+        padding: 20px;
+      }
+      
+      .day-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .day-amount {
+        margin: 5px 0 0;
+        align-self: flex-end;
+      }
+      
+      .checkbox-container {
+        align-self: flex-end;
+        margin-top: 10px;
+      }
+      
+      .extra-btn-group {
+        flex-direction: column;
+      }
+      
+      .btn-tambah, .btn-kurangi, .btn-reset {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>TABUNGAN SEKOLAH</h1>
+  <div class="header">Target Menabung</div>
+
+  <div class="card">
+    <div class="target-row">
+      <span class="target-label">Target Tabungan:</span>
+      <span class="target-value amount">Rp2.500.000</span>
+    </div>
+    
+    <div class="target-row">
+      <span class="target-label">Terkumpul:</span>
+      <span class="target-value amount" id="total">Rp0</span>
+    </div>
+    
+    <div class="progress-container">
+      <div class="progress-header">
+        <span class="target-label">Progress</span>
+        <span class="progress-percent" id="percent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="target-row">
+      <span class="target-label">Tabungan Tambahan:</span>
+      <span class="target-value amount" id="extraTotal">Rp0</span>
+    </div>
+    
+    <div class="extra-btn-group">
+      <input type="number" id="extraInput" class="extra-input" placeholder="Jumlah (Rp)">
+      <button onclick="tambahUang()" class="btn-tambah">Tambah</button>
+      <button onclick="kurangiUang()" class="btn-kurangi">Kurangi</button>
+      <button onclick="resetUang()" class="btn-reset">Reset</button>
+    </div>
+  </div>
+
+  <div class="days-container">
+    <div class="days-list" id="list"></div>
+  </div>
+
+  <script>
+    const jumlahPerHari = 15000;
+    const target = 2500000;
+    const startDate = new Date("2025-04-09");
+    const checked = JSON.parse(localStorage.getItem("tabunganChecked") || "[]");
+    let uangTambahan = parseInt(localStorage.getItem("uangTambahan") || "0");
+    const extraInput = document.getElementById("extraInput");
+    const extraTotal = document.getElementById("extraTotal");
+
+    const dates = [];
+    let date = new Date(startDate);
+    while (dates.length * jumlahPerHari < target) {
+      const day = date.getDay();
+      if (day >= 1 && day <= 5) {
+        dates.push(new Date(date));
+      }
+      date.setDate(date.getDate() + 1);
+    }
+
+    while (checked.length < dates.length) checked.push(false);
+    localStorage.setItem("tabunganChecked", JSON.stringify(checked));
+
+    const list = document.getElementById("list");
+    const totalEl = document.getElementById("total");
+    const progressFill = document.getElementById("progressFill");
+    const percentEl = document.getElementById("percent");
+
+    function tambahUang() {
+      const value = parseInt(extraInput.value || "0");
+      if (value > 0) {
+        uangTambahan += value;
+        localStorage.setItem("uangTambahan", uangTambahan);
+        extraInput.value = "";
+        render();
+      } else {
+        alert("Masukkan jumlah yang valid (lebih dari 0)");
+      }
+    }
+
+    function kurangiUang() {
+      const value = parseInt(extraInput.value || "0");
+      if (value > 0) {
+        if (uangTambahan - value >= 0) {
+          uangTambahan -= value;
+          localStorage.setItem("uangTambahan", uangTambahan);
+          extraInput.value = "";
+          render();
+        } else {
+          alert("Tidak bisa mengurangi lebih dari tabungan tambahan yang ada");
+        }
+      } else {
+        alert("Masukkan jumlah yang valid (lebih dari 0)");
+      }
+    }
+
+    function resetUang() {
+      if (confirm("Apakah Anda yakin ingin mereset tabungan tambahan?")) {
+        uangTambahan = 0;
+        localStorage.setItem("uangTambahan", uangTambahan);
+        render();
+      }
+    }
+
+    function render() {
+      list.innerHTML = "";
+      let total = uangTambahan;
+
+      dates.forEach((date, index) => {
+        const isChecked = checked[index];
+        const dayItem = document.createElement("div");
+        dayItem.className = `day-item ${isChecked ? "checked" : ""}`;
+
+        const dateString = date.toLocaleDateString("id-ID", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        });
+
+        dayItem.innerHTML = `
+          <div class="day-info">
+            <div class="day-number">Hari ke-${index + 1}</div>
+            <div class="day-date">${dateString}</div>
+          </div>
+          <span class="day-amount">+Rp${jumlahPerHari.toLocaleString("id-ID")}</span>
+          <label class="checkbox-container">
+            <input type="checkbox" ${isChecked ? "checked" : ""}>
+            <span class="checkmark"></span>
+          </label>
+        `;
+
+        dayItem.querySelector("input").addEventListener("change", () => {
+          checked[index] = !checked[index];
+          localStorage.setItem("tabunganChecked", JSON.stringify(checked));
+          render();
+        });
+
+        if (isChecked) total += jumlahPerHari;
+        list.appendChild(dayItem);
+      });
+
+      totalEl.textContent = `Rp${total.toLocaleString("id-ID")}`;
+      extraTotal.textContent = `Rp${uangTambahan.toLocaleString("id-ID")}`;
+      const percent = Math.min(100, (total / target * 100)).toFixed(1);
+      percentEl.textContent = `${percent}%`;
+      progressFill.style.width = `${percent}%`;
+    }
+
+    render();
+  </script>
+</body>
+</html>
